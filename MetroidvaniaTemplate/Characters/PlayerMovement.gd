@@ -21,34 +21,29 @@ func _process(delta):
 	# Handle jump.
 	jump(delta)
 
-	#if Input.is_action_just_pressed("ui_accept") and is_on_floor():
-		
-		#velocity.y = JUMP_VELOCITY
-		#$AnimationPlayer.play("Jump")		
-
-
-
 	# Get the input direction and handle the movement/deceleration.
 	var direction = Input.get_axis("ui_left", "ui_right")
 	movement(direction)
+	
+	attack()
 	
 func movement(direction) :
 	if direction > 0:
 		$Sprite2D.scale.x = 1;
 		velocity.x = direction * SPEED
-		if $AnimationPlayer.current_animation == "Idle" or velocity.y == 0:
+		if $AnimationPlayer.current_animation == "Idle" or velocity.y == 0 and $AnimationPlayer.current_animation != "Attack":
 			$AnimationPlayer.play("Walk")
 	
 	elif direction < 0:
 		$Sprite2D.scale.x = -1;
 		velocity.x = direction * SPEED
-		if $AnimationPlayer.current_animation == "Idle" or velocity.y == 0:
+		if $AnimationPlayer.current_animation == "Idle" or velocity.y == 0 and $AnimationPlayer.current_animation != "Attack":
 			$AnimationPlayer.play("Walk")
 	
 	elif direction == 0:
 		velocity.x = 0
 		
-	if direction == 0 and velocity.y == 0: 
+	if direction == 0 and velocity.y == 0 and $AnimationPlayer.current_animation != "Attack": 
 		velocity.x = 0
 		$AnimationPlayer.play("Idle")
 		
@@ -58,12 +53,20 @@ func jump(delta) :
 	JUMP_VELOCITY = -200.0
 	jumpTimer = 0.0
 	
-	if Input.is_action_just_pressed("ui_accept") and is_on_floor():
+	if Input.is_action_just_pressed("ui_accept") and is_on_floor() and $AnimationPlayer.current_animation != "Attack":
 		velocity.y = JUMP_VELOCITY
 		$AnimationPlayer.play("Jump")		
 		
-	if Input.is_action_pressed("ui_accept") and velocity.y < 0:
+	if Input.is_action_pressed("ui_accept") and velocity.y < 0 and $AnimationPlayer.current_animation != "Attack":
 		velocity.y -= 11.0 + delta
 		$AnimationPlayer.play("Jump")	
+
+	
 		
+func attack() :
+	if Input.is_action_just_pressed("attack") and $AnimationPlayer.current_animation != "Attack":
+		$AnimationPlayer.play("Attack")
+		
+	if Input.is_action_just_pressed("attack") and $AnimationPlayer.current_animation == "Jump":
+		$AnimationPlayer.play("Attack")
 	
